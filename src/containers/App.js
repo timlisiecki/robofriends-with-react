@@ -6,14 +6,14 @@ import Header from '../components/Header';
 import CardList from '../components/CardList';
 import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
+import ErrorBoundary from '../components/ErrorBoundary';
 import './App.css';
 
 const mapStateToProps = state => {
 	return {
 		searchField: state.searchRobots.searchField,
 		robots: state.requestRobots.robots,
-		isPending: state.requestRobots.isPending,
-		error: state.requestRobots.error
+		isPending: state.requestRobots.isPending
 	}
 }
 
@@ -35,17 +35,19 @@ class App extends Component {
 		const filteredRobots = robots.filter(robot => {
 			return robot.name.toLowerCase().includes(searchField.toLowerCase());
 		});
-		return isPending ? 
-			 <h1>Loading...</h1> :
-			(
-				<div className="tc">
-					<Header />
-					<SearchBox searchChange={onSearchChange}/>
-					<Scroll>
-						<CardList robots={filteredRobots}/>
-					</Scroll>
-				</div>
-			);
+		return (
+			<div className='tc'>
+				<Header />
+				<SearchBox searchChange={onSearchChange}/>
+				<Scroll>
+				  { isPending ? <h1>Loading</h1> :
+				    <ErrorBoundary>
+				      <CardList robots={filteredRobots} />
+				    </ErrorBoundary>
+				  }
+				</Scroll>
+			</div>
+		);
 	}
 }
 
